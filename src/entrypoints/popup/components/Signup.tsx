@@ -1,3 +1,5 @@
+import API from '@/config/api';
+import Toast from '@/utils/toastClass';
 import { Paper } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -5,27 +7,35 @@ import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Signup() {
-    const navigate = useNavigate()
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        //   event.preventDefault();
-        //   const data = new FormData(event.currentTarget);
-        //   const { email, password } = Object.fromEntries(data);
-        //   if (password.length < 6) {
-        //      alert('Password must be at least 6 characters long')
-        //      return;
-        //   }
-        //   //registering new user
-        //   registerUser(email.toString(), password.toString()).then((res) => {
-        //      if (res.status === 'success') {
-        //         alert('An email is sent to your email address. Please verify your email address to login.');
-        //         appView.value = 'signin' //showing login screen after registering.
-        //      } else {
-        //         alert(res.message)
-        //      }
-        //   });
+    const { setAuth } = useAuth();
+    const navigate = useNavigate();
+
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const registerToast = new Toast('Registering user...')
+        const formdata = new FormData(event.currentTarget);
+
+        //registering new user
+        try {
+            const res = await API.post('/auth/signup', formdata);
+
+            if (res.status === 200) {
+                registerToast.sendSuccess(res.data.message || 'Registering successful. Please login!!');
+                const user = res.data.data
+                //set the user
+                setAuth(user);
+
+                //set the local storage
+                await storage.setItem('local:auth', user);
+                navigate('/');
+            }
+        } catch (error: any) {
+            registerToast.sendError(error?.response.data.errors[0] || error?.message);
+        }
     };
 
     return (
@@ -59,11 +69,12 @@ export default function Signup() {
                         <Grid container spacing={2}>
                             <Grid width={'100%'}>
                                 <TextField
+                                    type='email'
                                     required
                                     fullWidth
-                                    id="email"
+                                    id="username"
                                     label="Email Address"
-                                    name="email"
+                                    name="username"
                                     autoComplete="email"
                                 />
                             </Grid>
