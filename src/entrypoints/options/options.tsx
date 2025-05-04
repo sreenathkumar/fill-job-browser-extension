@@ -57,12 +57,14 @@ function Options() {
 
       if (username) {
         const dataToast = new Toast('Loading profile data...');
-        const data = await getData(username);
-        if (data) {
-          setProfileData(data);
-          dataToast.sendSuccess('Profile data loaded.');
-        } else {
-          dataToast.sendError('Loading data failed.');
+        try {
+          const data = await getData(username);
+          if (data) {
+            setProfileData(data);
+            dataToast.sendSuccess('Profile data loaded.');
+          }
+        } catch (error: any) {
+          dataToast.sendError(error?.response.data.errors[0] || error.message);
         }
       }
     })()
