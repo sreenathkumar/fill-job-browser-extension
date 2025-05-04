@@ -61,6 +61,7 @@ function Options() {
           const data = await getData(username);
           if (data) {
             setProfileData(data);
+            browser.runtime.sendMessage({ type: 'REFETCH_AUTH' });
             dataToast.sendSuccess('Profile data loaded.');
           }
         } catch (error: any) {

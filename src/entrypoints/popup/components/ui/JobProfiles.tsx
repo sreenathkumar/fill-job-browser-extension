@@ -1,6 +1,6 @@
 import { Button } from "@mui/material";
+import CreateProfile from "./CreateProfile";
 import ProfileCard from "./ProfileCard";
-import { Link } from "react-router-dom";
 
 interface ProfileItemType {
     name: string,
@@ -9,15 +9,15 @@ interface ProfileItemType {
 
 function JobProfiles({ profiles }: { profiles: ProfileItemType[] }) {
     //function to handle job profile edit button
-    const handleJobEdit = (username: string) => {
-        const url = browser.runtime.getURL(`/options.html?username=${username}`);
+    const handleJobEdit = (id: string) => {
+        const url = browser.runtime.getURL(`/options.html?username=${id}`);
 
         //create a new tab to edit the job profile.
         browser.tabs.create({ url });
     }
 
     //function which will fill the form
-    const handleFill = (username: string) => {
+    const handleFill = (id: string) => {
 
     }
     return (
@@ -32,7 +32,7 @@ function JobProfiles({ profiles }: { profiles: ProfileItemType[] }) {
                             Fill form
                         </Button>
                     </ProfileCard>
-                }) : <Button LinkComponent={Link} variant="text">Create profiles</Button>
+                }) : <CreateProfile />
 
             }
         </>
